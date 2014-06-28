@@ -16,5 +16,10 @@
             <field name="type">tree</field>
             <field name="name">variation_attributes_tree</field>
         </record>
+        <record model="ir.ui.view" id="product_view_form">
+            <field name="model">product.product</field>
+            <field name="inherit" ref="product.product_view_form" />
+            <field name="name">product_form</field>
+        </record>
     </data>
 </tryton>
