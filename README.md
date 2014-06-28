@@ -1,2 +1,2 @@
-nereid-catalog-varient
-======================
+Nereid Catalog Variants
+========================
