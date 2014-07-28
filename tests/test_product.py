@@ -83,8 +83,8 @@ class TestProduct(NereidTestCase):
             'application_user': USER,
             'default_locale': self.locale_en_us.id,
             'guest_user': guest_user,
-            'categories': [('set', [self.category.id])],
-            'currencies': [('set', [usd.id])],
+            'categories': [('add', [self.category.id])],
+            'currencies': [('add', [usd.id])],
         }])
 
     def setUp(self):
@@ -147,7 +147,7 @@ class TestProduct(NereidTestCase):
             attrib_set, = self.ProductAttributeSet.create([{
                 'name': 'Cloth',
                 'attributes': [
-                    ('set', [attribute1.id, attribute2.id, attribute4.id])
+                    ('add', [attribute1.id, attribute2.id, attribute4.id])
                 ]
             }])
 
