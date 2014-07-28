@@ -7,7 +7,7 @@ install:
 script:
   - coverage run setup.py test
   - python setup.py test_on_postgres
-  - coverage report -m --fail-under 100
+  - coverage report -m --fail-under 80
   - flake8 .
 notifications:
   email:
