@@ -1,0 +1,7 @@
+psycopg2
+
+# Install nereid-catalog from github
+git+https://git@github.com/openlabs/nereid-catalog.git@develop
+
+# Install this package itself
+.
