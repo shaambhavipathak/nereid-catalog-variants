@@ -44,13 +44,6 @@ class TestProduct(NereidTestCase):
         party2, = self.Party.create([{
             'name': 'Guest User',
         }])
-        guest_user, = self.NereidUser.create([{
-            'party': party2.id,
-            'display_name': 'Guest User',
-            'email': 'guest@openlabs.co.in',
-            'password': 'password',
-            'company': company.id,
-        }])
         party3, = self.Party.create([{
             'name': 'Registered User',
         }])
@@ -60,11 +53,6 @@ class TestProduct(NereidTestCase):
             'email': 'email@example.com',
             'password': 'password',
             'company': company.id,
-        }])
-
-        self.category, = self.Category.create([{
-            'name': 'CategoryA',
-            'uri': 'category-1'
         }])
 
         # Create website
@@ -82,8 +70,6 @@ class TestProduct(NereidTestCase):
             'company': company.id,
             'application_user': USER,
             'default_locale': self.locale_en_us.id,
-            'guest_user': guest_user,
-            'categories': [('add', [self.category.id])],
             'currencies': [('add', [usd.id])],
         }])
 
@@ -103,7 +89,6 @@ class TestProduct(NereidTestCase):
         self.Language = POOL.get('ir.lang')
         self.NereidWebsite = POOL.get('nereid.website')
         self.Party = POOL.get('party.party')
-        self.Category = POOL.get('product.category')
         self.Template = POOL.get('product.template')
         self.Uom = POOL.get('product.uom')
         self.Locale = POOL.get('nereid.website.locale')
@@ -177,6 +162,8 @@ class TestProduct(NereidTestCase):
             with self.assertRaises(UserError):
                 self.Product.create([{
                     'template': template1.id,
+                    'displayed_on_eshop': True,
+                    'uri': 'uri1',
                     'code': 'SomeProductCode',
                 }])
 
@@ -184,6 +171,8 @@ class TestProduct(NereidTestCase):
             with self.assertRaises(UserError):
                 self.Product.create([{
                     'template': template1.id,
+                    'displayed_on_eshop': True,
+                    'uri': 'uri2',
                     'code': 'SomeProductCode',
                     'attributes': {'color': 'blue'}
                 }])
@@ -192,6 +181,8 @@ class TestProduct(NereidTestCase):
             # template variation_attributes.
             product1, = self.Product.create([{
                 'template': template1.id,
+                'displayed_on_eshop': True,
+                'uri': 'uri3',
                 'code': 'SomeProductCode',
                 'attributes': {
                     'color': 'blue',
