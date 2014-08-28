@@ -34,7 +34,7 @@ class Template:
         })
 
     def validate_variation_attributes(self):
-        for product in self.products:
+        for product in self.products_displayed_on_eshop:
             product.validate_attributes()
 
     @classmethod
@@ -49,7 +49,7 @@ class Template:
         variants = []
         varying_attributes = []
 
-        for product in self.products:
+        for product in self.products_displayed_on_eshop:
             res = product.attributes or {}
             variants.append({
                 'id': product.id,
@@ -102,6 +102,8 @@ class Product:
         """Check if product defines all the attributes specified in
         template variation attributes.
         """
+        if not self.displayed_on_eshop:
+            return
         required_attrs = set(
             [v.attribute.name for v in self.template.variation_attributes]
         )
