@@ -5,11 +5,14 @@
     :copyright: (c) 2014 by Openlabs Technologies & Consulting (P) Limited
     :license: BSD, see LICENSE for more details.
 """
+from functools import partial
+
 from trytond.model import ModelView, ModelSQL, fields
 from trytond.pool import PoolMeta
 from trytond.pyson import Eval
-from nereid import url_for
+from nereid import url_for, request
 from flask import json
+from babel import numbers
 
 __all__ = [
     'Template', 'Product', 'ProductVariationAttributes',
@@ -48,14 +51,18 @@ class Template:
         """
         variants = []
         varying_attributes = []
-
+        currency_format = partial(
+            numbers.format_currency,
+            currency=request.nereid_website.company.currency.code,
+            locale=request.nereid_website.default_locale.language.code
+        )
         for product in self.products_displayed_on_eshop:
             res = product.attributes or {}
             variants.append({
                 'id': product.id,
-                'rec_name': product.rec_name,
+                'name': product.template.name,
                 'code': product.code,
-                'price': product.sale_price(1),
+                'price': currency_format(product.sale_price(1)),
                 'url': url_for('product.product.render', uri=product.uri),
                 'attributes': res,
             })
