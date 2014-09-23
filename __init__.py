@@ -6,7 +6,8 @@
     :license: BSD, see LICENSE for more details.
 """
 from trytond.pool import Pool
-from product import Template, Product, ProductVariationAttributes
+from product import Template, Product, ProductVariationAttributes, \
+    ProductAttribute
 
 
 def register():
@@ -14,5 +15,6 @@ def register():
         Template,
         Product,
         ProductVariationAttributes,
+        ProductAttribute,
         module='nereid_catalog_variants', type_='model'
     )

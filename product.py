@@ -15,7 +15,7 @@ from flask import json
 from babel import numbers
 
 __all__ = [
-    'Template', 'Product', 'ProductVariationAttributes',
+    'Template', 'Product', 'ProductVariationAttributes', 'ProductAttribute',
 ]
 __metaclass__ = PoolMeta
 
@@ -152,3 +152,15 @@ class ProductVariationAttributes(ModelSQL, ModelView):
     @staticmethod
     def default_sequence():
         return 10
+
+
+class ProductAttribute:
+    __name__ = 'product.attribute'
+
+    @classmethod
+    def __setup__(cls):
+        super(ProductAttribute, cls).__setup__()
+        cls._sql_constraints += [
+            ('unique_name', 'UNIQUE(name)',
+                'Attribute name must be unique!'),
+        ]
