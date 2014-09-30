@@ -78,6 +78,7 @@ class Template:
             varying_attributes.append({
                 'sequence': varying_attrib.sequence,
                 'name': varying_attrib.attribute.name,
+                'string': varying_attrib.attribute.string,
                 'widget': varying_attrib.widget,
 
                 # TODO: Add support for more attribute types
