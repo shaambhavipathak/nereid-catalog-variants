@@ -5,14 +5,17 @@
     :copyright: (c) 2014 by Openlabs Technologies & Consulting (P) Limited
     :license: BSD, see LICENSE for more details.
 """
+from functools import partial
+
 from trytond.model import ModelView, ModelSQL, fields
 from trytond.pool import PoolMeta
 from trytond.pyson import Eval
-from nereid import url_for
+from nereid import url_for, request
 from flask import json
+from babel import numbers
 
 __all__ = [
-    'Template', 'Product', 'ProductVariationAttributes',
+    'Template', 'Product', 'ProductVariationAttributes', 'ProductAttribute',
 ]
 __metaclass__ = PoolMeta
 
@@ -34,7 +37,7 @@ class Template:
         })
 
     def validate_variation_attributes(self):
-        for product in self.products:
+        for product in self.products_displayed_on_eshop:
             product.validate_attributes()
 
     @classmethod
@@ -48,14 +51,18 @@ class Template:
         """
         variants = []
         varying_attributes = []
-
-        for product in self.products:
+        currency_format = partial(
+            numbers.format_currency,
+            currency=request.nereid_website.company.currency.code,
+            locale=request.nereid_website.default_locale.language.code
+        )
+        for product in self.products_displayed_on_eshop:
             res = product.attributes or {}
             variants.append({
                 'id': product.id,
-                'rec_name': product.rec_name,
+                'name': product.template.name,
                 'code': product.code,
-                'price': product.sale_price(1),
+                'price': currency_format(product.sale_price(1)),
                 'url': url_for('product.product.render', uri=product.uri),
                 'attributes': res,
             })
@@ -71,6 +78,7 @@ class Template:
             varying_attributes.append({
                 'sequence': varying_attrib.sequence,
                 'name': varying_attrib.attribute.name,
+                'string': varying_attrib.attribute.string,
                 'widget': varying_attrib.widget,
 
                 # TODO: Add support for more attribute types
@@ -102,6 +110,8 @@ class Product:
         """Check if product defines all the attributes specified in
         template variation attributes.
         """
+        if not self.displayed_on_eshop:
+            return
         required_attrs = set(
             [v.attribute.name for v in self.template.variation_attributes]
         )
@@ -143,3 +153,15 @@ class ProductVariationAttributes(ModelSQL, ModelView):
     @staticmethod
     def default_sequence():
         return 10
+
+
+class ProductAttribute:
+    __name__ = 'product.attribute'
+
+    @classmethod
+    def __setup__(cls):
+        super(ProductAttribute, cls).__setup__()
+        cls._sql_constraints += [
+            ('unique_name', 'UNIQUE(name)',
+                'Attribute name must be unique!'),
+        ]
