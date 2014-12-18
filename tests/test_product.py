@@ -192,6 +192,73 @@ class TestProduct(NereidTestCase):
             }])
             self.assert_(product1)
 
+    def test_0020_product_variation_data(self):
+        """
+        Test get_product_variation_data method.
+        """
+        with Transaction().start(DB_NAME, USER, context=CONTEXT):
+            self.setup_defaults()
+            uom, = self.Uom.search([], limit=1)
+            app = self.get_app()
+
+            with app.test_request_context():
+                # Create attributes
+                attribute1, = self.ProductAttribute.create([{
+                    'name': 'size',
+                    'type_': 'selection',
+                    'string': 'Size',
+                    'selection': 'm: M\nl:L\nxl:XL'
+                }])
+                attribute2, = self.ProductAttribute.create([{
+                    'name': 'color',
+                    'type_': 'selection',
+                    'string': 'Color',
+                    'selection': 'blue: Blue\nblack:Black'
+                }])
+
+                # Create attribute set
+                attrib_set, = self.ProductAttributeSet.create([{
+                    'name': 'Cloth',
+                    'attributes': [
+                        ('add', [attribute1.id, attribute2.id])
+                    ]
+                }])
+
+                # Create product template with attribute set
+                template1, = self.Template.create([{
+                    'name': 'THis is Product',
+                    'type': 'goods',
+                    'list_price': Decimal('10'),
+                    'cost_price': Decimal('5'),
+                    'default_uom': uom.id,
+                    'attribute_set': attrib_set.id,
+                }])
+
+                # Create variation attributes
+                self.VariationAttributes.create([{
+                    'template': template1.id,
+                    'attribute': attribute1.id,
+                }, {
+                    'template': template1.id,
+                    'attribute': attribute2.id,
+                }])
+
+                product1, = self.Product.create([{
+                    'template': template1.id,
+                    'displayed_on_eshop': True,
+                    'uri': 'uri3',
+                    'code': 'SomeProductCode',
+                    'attributes': {
+                        'color': 'blue',
+                        'size': 'L',
+                        'ø': 'something'
+                    }
+                }])
+
+                self.assertGreater(
+                    len(template1.get_product_variation_data()), 0
+                )
+
 
 def suite():
     """
