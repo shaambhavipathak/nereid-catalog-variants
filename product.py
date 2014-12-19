@@ -56,16 +56,6 @@ class Template:
             currency=request.nereid_website.company.currency.code,
             locale=request.nereid_website.default_locale.language.code
         )
-        for product in self.products_displayed_on_eshop:
-            res = product.attributes or {}
-            variants.append({
-                'id': product.id,
-                'name': product.template.name,
-                'code': product.code,
-                'price': currency_format(product.sale_price(1)),
-                'url': url_for('product.product.render', uri=product.uri),
-                'attributes': res,
-            })
 
         for varying_attrib in self.variation_attributes:
             # TODO: This assumes that the attribute is a selection
@@ -83,6 +73,24 @@ class Template:
 
                 # TODO: Add support for more attribute types
                 'options': json.loads(varying_attrib.attribute.selection_json),
+            })
+
+        varying_attribute_names = [
+            varattr['name'] for varattr in varying_attributes
+        ]
+
+        for product in self.products_displayed_on_eshop:
+            res = dict([av for av in filter(
+                lambda x: x[0] in varying_attribute_names,
+                product.attributes.iteritems()
+            )])
+            variants.append({
+                'id': product.id,
+                'name': product.template.name,
+                'code': product.code,
+                'price': currency_format(product.sale_price(1)),
+                'url': url_for('product.product.render', uri=product.uri),
+                'attributes': res,
             })
 
         rv = {
