@@ -1,8 +1,4 @@
 psycopg2
 
-# Install latest packages from github. This is temporary.
-https://github.com/openlabs/nereid/archive/develop.tar.gz
-https://github.com/openlabs/nereid-catalog/archive/develop.tar.gz
-
 # Install this package itself
 .
