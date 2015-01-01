@@ -80,9 +80,10 @@ class Template:
         ]
 
         for product in self.products_displayed_on_eshop:
+            product_attributes = product.attributes or {}
             res = dict([av for av in filter(
                 lambda x: x[0] in varying_attribute_names,
-                product.attributes.iteritems()
+                product_attributes.iteritems()
             )])
             variants.append({
                 'id': product.id,
